@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+.ant-menu-item-selected {
+  background-color: #B8336A !important; 
+  color: white !important; 
+  font-weight: 600 !important;
+}
+
+.ant-menu-item-selected:hover {
+  background-color: #B8336A !important; 
+}
+
+.ant-menu-item {
+  margin-bottom: 18px !important; /* Set gap between menu items */
+  font-size: 18px !important;      
+   
+}
+
+.custom-table .ant-table-thead > tr > th {
+  background-color: #B8336A !important;
+  color: white !important;
+  font-weight: bold;
+  text-align: center;
+}
+.custom-table .ant-table-tbody > tr > td {
+  text-align: center;
+}
+
+
+
+
+
+
+.sales-summary-container {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: "Arial", sans-serif;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.header h2 {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333333;
+  margin: 0;
+}
+
+.bi-weekly-report {
+  font-size: 14px;
+  color: #666666;
+  font-weight: 500;
+}
+
+.chart-container {
+  position: relative;
+  height: 300px;
+}
+
+/* Tooltip Customization */
+.chartjs-tooltip {
+  background: white;
+  color: #333;
+  font-size: 12px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+}
+
+/* Y-axis grid lines */
+.chart-container canvas {
+  margin-top: 10px;
+}

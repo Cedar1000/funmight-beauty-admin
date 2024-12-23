@@ -1,22 +1,33 @@
 {
-  "name": "funmight-beauty-admin",
+  "name": "funmight-admin",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
-    "react": "19.0.0-rc-66855b96-20241106",
-    "react-dom": "19.0.0-rc-66855b96-20241106",
-    "next": "15.0.3"
+    "@ant-design/plots": "^2.3.2",
+    "@tanstack/react-query": "^5.62.8",
+    "antd": "^5.22.3",
+    "axios": "^1.7.9",
+    "chart.js": "^4.4.7",
+    "moment": "^2.30.1",
+    "next": "14.2.15",
+    "react": "^18",
+    "react-chartjs-2": "^5.2.0",
+    "react-cookies": "^0.1.1",
+    "react-dom": "^18",
+    "react-hot-toast": "^2.4.1",
+    "react-icons": "^5.4.0",
+    "react-loading-skeleton": "^3.5.0"
   },
   "devDependencies": {
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
     "eslint": "^8",
-    "eslint-config-next": "15.0.3"
+    "eslint-config-next": "14.2.15",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1"
   }
 }
