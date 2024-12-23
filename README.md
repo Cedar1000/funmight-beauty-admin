@@ -1,1 +1,1 @@
-## This is stevenogbonna's cinematographer's portfolio site
+## Admin page for FunMight beauty shop
