@@ -24,6 +24,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useParams } from "next/navigation";
 import Navbar from "@/app/components/layout/Navbar";
 import SkeletonLoader from "../component/Skeleton";
+import Image from "next/image";
 
 const { Option } = Select;
 const { Dragger } = Upload;
@@ -433,8 +434,10 @@ const handleRemove = () => {
                       {previewImage ? (
                         <div style={{ textAlign: "center" }}>
                           {/* Image preview */}
-                          <img
+                          <Image
                             src={previewImage}
+                            width={200} 
+                            height={300}
                             alt="Uploaded"
                             style={{
                               maxWidth: "100%",

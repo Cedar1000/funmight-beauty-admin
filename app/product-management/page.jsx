@@ -3,15 +3,15 @@ import { useState } from "react";
 import Sidebar from "@/app/components/layout/Sidebar";
 import Navbar from "@/app/components/layout/Navbar";
 import axios from "@/utils/axios";
-import StatsCard from "../dashboard/component/StatsCard";
-import SalesSummary from "../dashboard/component/SalesSummary";
-import LatestOrders from "../dashboard/component/LatestOrders";
-import { UserOutlined, ShoppingOutlined } from "@ant-design/icons";
+// import StatsCard from "../dashboard/component/StatsCard";
+// import SalesSummary from "../dashboard/component/SalesSummary";
+// import LatestOrders from "../dashboard/component/LatestOrders";
+// import { UserOutlined, ShoppingOutlined } from "@ant-design/icons";
 import SearchBar from "../components/layout/SearchBar";
 import OrdersTable from "./component/OrderTable";
 import Link from "next/link";
 
-const products = () =>{
+const Products = () =>{
   
       const [searchResults, setSearchResults] = useState([]);
 
@@ -62,4 +62,4 @@ const products = () =>{
     </div>
   );};
 
-export default products;
+export default Products;

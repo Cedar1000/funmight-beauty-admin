@@ -174,14 +174,17 @@ const showActionModal = async (type) => {
           dataSource={items}
           renderItem={(item) => (
             <List.Item
+              key={item.id}
               actions={[
                 <Button
+                  key={item.id}
                   type="link"
                   onClick={() => showOperationModal("edit", item.id, item.name)}
                 >
                   Edit
                 </Button>,
                 <Button
+                  key={item.id}
                   type="link"
                   danger
                   onClick={() => showOperationModal("delete", item.id)}

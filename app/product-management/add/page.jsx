@@ -18,6 +18,7 @@ import axios from "@/utils/axios";
 import { useQuery } from "@tanstack/react-query";
 import {useRouter} from "next/navigation";
 import Navbar from "@/app/components/layout/Navbar";
+import Image from "next/image";
 
 const { Option } = Select;
 const { Dragger } = Upload;
@@ -372,8 +373,10 @@ const AddProductPage = () => {
                     {previewImage ? (
                       <div style={{ textAlign: "center" }}>
                         {/* Image preview */}
-                        <img
+                        <Image
                           src={previewImage}
+                          width={200} 
+                          height={300}
                           alt="Uploaded"
                           style={{
                             maxWidth: "100%",
