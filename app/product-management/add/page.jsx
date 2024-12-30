@@ -14,18 +14,34 @@ import {
 import { PlusOutlined, InboxOutlined, CloseOutlined, DeleteOutlined } from "@ant-design/icons";
 import Sidebar from "@/app/components/layout/Sidebar";
 import { useState } from "react";
+import axios from "@/utils/axios";
+import { useQuery } from "@tanstack/react-query";
+import {useRouter} from "next/navigation";
+import Navbar from "@/app/components/layout/Navbar";
 
 const { Option } = Select;
 const { Dragger } = Upload;
 
+const fetchCategories = async () => {
+  const { data } = await axios.get("/category");
+  return data.doc;
+};
+
+const fetchTags = async () => {
+  const { data } = await axios.get("/tags");
+  return data.doc;
+};
+
+
 const AddProductPage = () => {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const [productData, setProductData] = useState({
     productName: "",
     description: "",
     category: "",
-    tags: "",
+    tags: [],
     status: "Draft",
     basePrice: "",
     discountType: "",
@@ -42,6 +58,41 @@ const AddProductPage = () => {
     },
     images: [],
   });
+  const [previewImage, setPreviewImage] = useState(null);
+
+  const { data: categories, isLoading: loadingCategories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+  });
+
+  const { data: tags, isLoading: loadingTags } = useQuery({
+    queryKey: ["tags"],
+    queryFn: fetchTags,
+  });
+
+  // Function to handle changes in Category
+  const handleCategoryChange = (value) => {
+    setProductData((prev) => ({
+      ...prev,
+      category: value, 
+    }));
+  };
+
+  // Function to handle changes in Tags
+  const handleTagsChange = (value) => {
+    setProductData((prev) => ({
+      ...prev,
+      tags: value,
+    }));
+  };
+
+  // Function to handle changes in Status
+  const handleStatusChange = (value) => {
+    setProductData((prev) => ({
+      ...prev,
+      status: value,
+    }));
+  };
 
   const handleInputChange = (field, value) => {
     setProductData((prev) => ({ ...prev, [field]: value }));
@@ -54,55 +105,142 @@ const AddProductPage = () => {
     }));
   };
 
-   const handleVariantChange = (index, field, value) => {
-     const updatedVariations = [...productData.variations];
-     updatedVariations[index][field] = value;
+  const handleVariantChange = (index, field, value) => {
+    const updatedVariations = [...productData.variations];
+    updatedVariations[index][field] = value;
 
-     setProductData((prev) => ({
-       ...prev,
-       variations: updatedVariations,
-     }));
-   };
+    setProductData((prev) => ({
+      ...prev,
+      variations: updatedVariations,
+    }));
+  };
 
-   const addVariant = () => {
-     setProductData((prev) => ({
-       ...prev,
-       variations: [...prev.variations, { type: "", value: "" }],
-     }));
-   };
+  const addVariant = () => {
+    setProductData((prev) => ({
+      ...prev,
+      variations: [...prev.variations, { type: "", value: "" }],
+    }));
+  };
 
-   const deleteVariant = (index) => {
-     const updatedVariations = productData.variations.filter(
-       (_, i) => i !== index
-     );
+  const deleteVariant = (index) => {
+    const updatedVariations = productData.variations.filter(
+      (_, i) => i !== index
+    );
 
-     setProductData((prev) => ({
-       ...prev,
-       variations: updatedVariations,
-     }));
-   };
+    setProductData((prev) => ({
+      ...prev,
+      variations: updatedVariations,
+    }));
+  };
 
+  // Handle file upload
   const handleUpload = ({ file, onSuccess }) => {
-    setTimeout(() => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
       onSuccess("ok");
+      setPreviewImage(reader.result); 
       setProductData((prev) => ({
         ...prev,
-        images: [...prev.images, file],
+        images: [file], 
       }));
       message.success(`${file.name} uploaded successfully.`);
-    }, 1000);
+    };
+
+    reader.readAsDataURL(file); 
   };
+
+  // Handle file removal
+  const handleRemove = () => {
+    setPreviewImage(null);
+    setProductData((prev) => ({
+      ...prev,
+      images: [], 
+    }));
+    message.info("Image removed.");
+  };
+
+    const handleSubmit = async () => {
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append("name", productData.productName);
+      formData.append("description", productData.description);
+      formData.append("price", productData.basePrice);
+      formData.append("images", productData.images[0]);      
+     productData.tags.forEach((tag) => formData.append("tags", tag));
+      formData.append("category", productData.category);
+      formData.append("length", productData.shipping.length);
+      formData.append("height", productData.shipping.height);
+      formData.append("width", productData.shipping.width);
+      formData.append("weight", productData.shipping.weight);
+
+    
+
+      try {
+        const response = await axios.post("/products", formData);
+
+        message.success("Product added successfully!");
+        console.log(response.data);
+        setProductData({
+          productName: "",
+          description: "",
+          category: "",
+          tags: [],
+          status: "Draft",
+          basePrice: "",
+          discountType: "",
+          discountValue: "",
+          taxClass: "",
+          vatAmount: "",
+          quantity: "",
+          variations: [{ type: "", value: "" }],
+          shipping: {
+            weight: "",
+            height: "",
+            length: "",
+            width: "",
+          },
+          images: null,
+        });
+        setPreviewImage(null); 
+        router.back(); 
+      } catch (error) {
+        message.error("Failed to add product. Please try again.");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+
+  const handleCancel = () => {
+    router.back(); 
+  };
+
+
 
   return (
     <div className="flex">
       <Sidebar />
       <main className="flex-1 bg-white ml-64 overflow-y-auto px-3">
+        <Navbar className={`pt-8 pb-11 pl-9 pr-16`}>
+          <h2>Products</h2>
+        </Navbar>
         <div style={{ padding: "20px", maxWidth: "1200px", margin: "auto" }}>
           {/* Breadcrumb */}
-          <Breadcrumb style={{ marginBottom: "16px" }}>
-            <Breadcrumb.Item>Product</Breadcrumb.Item>
-            <Breadcrumb.Item>Add Product</Breadcrumb.Item>
-          </Breadcrumb>
+          <Breadcrumb
+            className="mb-4"
+            separator=">"
+            items={[
+              {
+                title: <span className="text-[#FD8A1C]">Product</span>,
+              },
+              {
+                title: "Add Product",
+              },
+            ]}
+          />
 
           <Card
             title="Add Product"
@@ -117,11 +255,15 @@ const AddProductPage = () => {
             }}
             extra={
               <Space>
-                <Button icon={<CloseOutlined />}>Cancel</Button>
+                <Button icon={<CloseOutlined />} onClick={handleCancel}>
+                  Cancel
+                </Button>
                 <Button
                   type="primary"
+                  className="bg-[#FD8A1C] border-none text-black"
                   icon={<PlusOutlined />}
                   loading={loading}
+                  onClick={handleSubmit}
                 >
                   Add Product
                 </Button>
@@ -210,11 +352,6 @@ const AddProductPage = () => {
                 {/* Media */}
                 <Card
                   title="Media"
-                  styles={{
-                    header: {
-                      borderBottom: "none",
-                    },
-                  }}
                   style={{
                     boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.08)",
                     marginBottom: "14px",
@@ -223,18 +360,45 @@ const AddProductPage = () => {
                   <Dragger
                     customRequest={handleUpload}
                     accept="image/*"
-                    multiple={false}
+                    multiple={false} // Restrict to one file
                     style={{
                       padding: "20px",
                       border: "2px dashed #F9F9FC",
                       borderRadius: "8px",
                       backgroundColor: "#F9F9FC",
                     }}
+                    showUploadList={false} // Hide default upload list
                   >
-                    <p className="ant-upload-drag-icon">
-                      <InboxOutlined style={{ color: "#FD8A1C" }} />
-                    </p>
-                    <p>Drag and drop image here, or click to add image</p>
+                    {previewImage ? (
+                      <div style={{ textAlign: "center" }}>
+                        {/* Image preview */}
+                        <img
+                          src={previewImage}
+                          alt="Uploaded"
+                          style={{
+                            maxWidth: "100%",
+                            maxHeight: "200px",
+                            marginBottom: "10px",
+                            borderRadius: "8px",
+                          }}
+                        />
+                        <Button
+                          type="primary"
+                          danger
+                          onClick={handleRemove}
+                          style={{ marginBottom: "10px" }}
+                        >
+                          Remove Image
+                        </Button>
+                      </div>
+                    ) : (
+                      <div style={{ textAlign: "center" }}>
+                        <InboxOutlined
+                          style={{ fontSize: "32px", color: "#FD8A1C" }}
+                        />
+                        <p>Drag and drop an image here, or click to upload.</p>
+                      </div>
+                    )}
                   </Dragger>
                 </Card>
 
@@ -419,10 +583,17 @@ const AddProductPage = () => {
                   style={{
                     borderRadius: "8px",
                     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    backgroundColor: "#F9F9FC",
                     marginBottom: "20px",
                   }}
                 >
-                  <Input placeholder="Type product quantity here..." />
+                  <Input
+                    value={productData.quantity}
+                    onChange={(e) =>
+                      handleInputChange("quantity", e.target.value)
+                    }
+                    placeholder="Type product quantity here..."
+                  />
                 </Card>
 
                 {/* Variation */}
@@ -566,6 +737,7 @@ const AddProductPage = () => {
 
               {/* Right Section */}
               <div style={{ flex: 1, minWidth: "30%" }}>
+                {/* Category Card */}
                 <Card
                   title="Category"
                   styles={{
@@ -580,14 +752,69 @@ const AddProductPage = () => {
                   }}
                 >
                   <Space direction="vertical" style={{ width: "100%" }}>
-                    <Select placeholder="Select Category">
-                      <Option value="electronics">Electronics</Option>
-                      <Option value="fashion">Fashion</Option>
+                    <Select
+                      placeholder="Select Category"
+                      style={{
+                        width: "100%",
+                        backgroundColor: "#E0E2E7",
+                        borderRadius: "8px",
+                      }}
+                      dropdownStyle={{
+                        backgroundColor: "#E0E2E7",
+                      }}
+                      value={productData.category}
+                      onChange={handleCategoryChange}
+                      loading={loadingCategories}
+                    >
+                      {categories?.map((category) => (
+                        <Option key={category.id} value={category.id}>
+                          {category.name}
+                        </Option>
+                      ))}
                     </Select>
-                    <Input placeholder="Product Tags" />
                   </Space>
                 </Card>
 
+                {/* Tags Card */}
+                <Card
+                  title="Tags"
+                  styles={{
+                    header: {
+                      borderBottom: "none",
+                    },
+                  }}
+                  style={{
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    marginBottom: "20px",
+                  }}
+                >
+                  <Space direction="vertical" style={{ width: "100%" }}>
+                    <Select
+                      mode="multiple" // Enable multiple selection
+                      placeholder="Select Tags"
+                      style={{
+                        width: "100%",
+                        backgroundColor: "#E0E2E7",
+                        borderRadius: "8px",
+                      }}
+                      dropdownStyle={{
+                        backgroundColor: "#E0E2E7",
+                      }}
+                      value={productData.tags}
+                      onChange={handleTagsChange}
+                      loading={loadingTags}
+                    >
+                      {tags?.map((tag) => (
+                        <Option key={tag.id} value={tag.id}>
+                          {tag.name}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Space>
+                </Card>
+
+                {/* Status Card */}
                 <Card
                   title="Status"
                   styles={{
@@ -602,7 +829,16 @@ const AddProductPage = () => {
                 >
                   <Select
                     placeholder="Product Status"
-                    style={{ width: "100%" }}
+                    style={{
+                      width: "100%",
+                      backgroundColor: "#E0E2E7",
+                      borderRadius: "8px",
+                    }}
+                    dropdownStyle={{
+                      backgroundColor: "#E0E2E7",
+                    }}
+                    value={productData.status}
+                    onChange={handleStatusChange}
                   >
                     <Option value="published">Published</Option>
                     <Option value="draft">Draft</Option>

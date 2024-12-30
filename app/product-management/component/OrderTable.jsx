@@ -10,18 +10,25 @@ import {
   Space,
   Tooltip,
   message,
+  Modal,
 } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "@/utils/axios";
 import moment from "moment";
 import { intlMoneyFormat } from "@/utils/helpers";
+import { useRouter } from "next/navigation";
 
 const OrdersTable = () => {
+  const router = useRouter();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [filter, setFilter] = useState("All Products");
+
+  // Modal state
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const pageSize = 10;
 
@@ -63,11 +70,27 @@ const OrdersTable = () => {
   }, [filter, currentPage]);
 
   const handleEdit = (record) => {
-    message.info(`Editing order: ${record.product}`);
+    router.push(`/product-management/${record.key}`);
   };
 
-  const handleDelete = (record) => {
-    message.success(`Deleted order: ${record.product}`);
+  const handleDelete = async () => {
+    if (!selectedProduct) return;
+
+    try {
+      await axios.delete(`/products/${selectedProduct.key}`);
+      message.success(`Deleted product: ${selectedProduct.product}`);
+      fetchOrders(filter, currentPage); // Refresh data after deletion
+    } catch (error) {
+      message.error("Failed to delete product. Please try again.");
+    } finally {
+      setIsDeleteModalVisible(false);
+      setSelectedProduct(null);
+    }
+  };
+
+  const showDeleteModal = (record) => {
+    setSelectedProduct(record);
+    setIsDeleteModalVisible(true);
   };
 
   const columns = [
@@ -105,7 +128,7 @@ const OrdersTable = () => {
           <Tooltip title="Delete">
             <DeleteOutlined
               style={{ color: "#ff4d4f", cursor: "pointer" }}
-              onClick={() => handleDelete(record)}
+              onClick={() => showDeleteModal(record)}
             />
           </Tooltip>
         </Space>
@@ -173,6 +196,21 @@ const OrdersTable = () => {
           />
         </div>
       </Card>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        title="Confirm Deletion"
+        open={isDeleteModalVisible}
+        onOk={handleDelete}
+        onCancel={() => setIsDeleteModalVisible(false)}
+        okText="Yes, Delete"
+        cancelText="Cancel"
+      >
+        <p>
+          Are you sure you want to delete the product{" "}
+          <strong>{selectedProduct?.product}</strong>?
+        </p>
+      </Modal>
     </>
   );
 };
