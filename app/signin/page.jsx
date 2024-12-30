@@ -72,8 +72,7 @@ const SignInPage = () => {
      // Assuming the server returns token and username in the response
      const { accessToken, user } = response.data;
 
-     console.log(response.data);
-     console.log(accessToken, "accessToken", "user:", user);
+
 
 
      // Save the token and username in cookies

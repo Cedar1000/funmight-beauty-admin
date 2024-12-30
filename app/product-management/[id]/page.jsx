@@ -82,13 +82,13 @@ const EditProductPage = () => {
     queryKey: ["product", productId],
     queryFn: fetchProduct,
   });
-  console.log(product, "loadingProduct after creation");
+  
   
     useEffect(() => {
     if (product) {
       setProductData({
-        productName: product.name, // Map "name" to "productName"
-        basePrice: product.price, // Map "price" to "basePrice"
+        productName: product.name, 
+        basePrice: product.price, 
         shipping: {
           weight: product.weight || "",
           height: product.height || "",
@@ -103,7 +103,7 @@ const EditProductPage = () => {
     
 }
 }, [product]);
-// console.log(productData, "productData after creation");
+
 
   const { data: categories, isLoading: loadingCategories } = useQuery({
     queryKey: ["categories"],

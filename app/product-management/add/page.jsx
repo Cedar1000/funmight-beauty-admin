@@ -182,7 +182,7 @@ const AddProductPage = () => {
         const response = await axios.post("/products", formData);
 
         message.success("Product added successfully!");
-        console.log(response.data);
+        
         setProductData({
           productName: "",
           description: "",
