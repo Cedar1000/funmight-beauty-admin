@@ -5,7 +5,9 @@ import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
 import { useQuery } from "@tanstack/react-query";
 import axios from "@/utils/axios";
+import { intlMoneyFormat } from "@/utils/helpers"; 
 
+// Fetch sales summary data
 const fetchSalesSummary = async () => {
   const response = await axios.get("/orders/get-sales-summary");
   return response.data.data;
@@ -43,9 +45,25 @@ const SalesSummary = () => {
     return <p>Error fetching sales data. Please try again later.</p>;
   }
 
+  // Array of month names
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
   // Map server data to chart labels and datasets
-  const labels = salesData.map((item) => `Month ${item.month}`);
-  const totals = salesData.map((item) => item.total);
+  const labels = salesData?.map((item) => monthNames[item.month - 1]); // Convert month number to name
+  const totals = salesData?.map((item) => item.total);
 
   const data = {
     labels,
@@ -74,7 +92,7 @@ const SalesSummary = () => {
       },
       tooltip: {
         callbacks: {
-          label: (tooltipItem) => `Sales: $${tooltipItem.raw}`,
+          label: (tooltipItem) => `Sales: ${intlMoneyFormat(tooltipItem.raw)}`, // Format currency
         },
       },
     },
@@ -89,7 +107,7 @@ const SalesSummary = () => {
       },
       y: {
         ticks: {
-          callback: (value) => `$${value}`,
+          callback: (value) => intlMoneyFormat(value), // Format currency
           color: "#666666",
         },
         grid: {

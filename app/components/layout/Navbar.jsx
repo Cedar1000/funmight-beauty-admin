@@ -24,9 +24,7 @@ const Navbar = ({children, className}) => {
       {/* <Input.Search placeholder="Search" className="w-80" /> */}
       {children}
       <div className="flex items-center space-x-10">
-        <Badge count={5}>
-          <BellOutlined style={{ fontSize: 20 }} />
-        </Badge>
+       
         <div className="flex items-center space-x-5">
           <Avatar icon={<UserOutlined />} />
           <p className="font-semibold text-2xl">

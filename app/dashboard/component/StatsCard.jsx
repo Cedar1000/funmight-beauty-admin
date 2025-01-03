@@ -143,7 +143,7 @@ const showActionModal = async (type) => {
           <Statistic title="Shipping" value={shipping} />
           <Statistic title="Completed" value={completed} />
         </div>
-        <div className="mt-16 flex gap-5  justify-between">
+        <div className="mt-16 flex flex-wrap gap-5  justify-between">
           <Button
             className="bg-[#B8336A] "
             type="primary"
@@ -168,6 +168,8 @@ const showActionModal = async (type) => {
         }`}
         open={isActionModalVisible}
         onCancel={closeActionModal}
+        style={{ maxHeight: "70vh", overflow: "hidden" }} 
+        styles={{ maxHeight: "60vh", overflowY: "auto" }}
         footer={null}
       >
         <List

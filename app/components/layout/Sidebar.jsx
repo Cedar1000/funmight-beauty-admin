@@ -24,12 +24,12 @@ const Sidebar = () => {
       key: "/product-management",
       icon: <ShoppingCartOutlined />,
     },
-    {
-      label: "Order Management",
-      key: "/order-management",
-      icon: <LineChartOutlined />,
-    },
-    { label: "Reports", key: "/reports" },
+    // {
+    //   label: "Order Management",
+    //   key: "/order-management",
+    //   icon: <LineChartOutlined />,
+    // },
+    // { label: "Reports", key: "/reports" },
   ];
 
   
